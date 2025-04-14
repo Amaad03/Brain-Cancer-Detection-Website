@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroDetect - Brain Cancer Detection</title>
+    <!-- Improved styling with a modern design -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Add FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <header class="header">
+            <h1>NeuroDetect</h1>
+            <p class="tagline">AI-Powered Brain Cancer Detection</p>
+        </header>
+
+        <!-- Tabs Navigation -->
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('upload')">
+                <i class="fas fa-upload"></i> Upload MRI
+            </button>
+            <button class="tab" onclick="showTab('about')">
+                <i class="fas fa-info-circle"></i> About
+            </button>
+        </div>
+
+        <!-- Upload Tab Content -->
+        <div id="upload" class="tab-content active">
+            <h2>Upload Your MRI Scan</h2>
+            <p class="instruction">Please upload an MRI scan in .jpg, .jpeg, .png, .bmp, or .gif format for analysis.</p>
+
+            <!-- Upload Form -->
+            <form method="post" enctype="multipart/form-data" action="/" id="uploadForm">
+                <div class="file-input-container">
+                    <input type="file" name="file" id="file" accept=".jpg, .jpeg, .png, .bmp, .gif" autocomplete="off" onchange="updateFileInfo()">
+                    <label for="file" class="file-input-label">
+                        <i class="fas fa-file-upload"></i> Choose File
+                    </label>
+                </div>
+                <div class="submit-button-container">
+                    <button type="submit" class="submit-button">
+                        <i class="fas fa-cloud-upload-alt"></i> Upload & Analyze
+                    </button>
+                </div>
+            </form>
+
+            <!-- File Info Display -->
+            <div id="fileInfo">
+                {% if filename %}
+                    <p class="file-name">File Name: <span>{{ filename }}</span></p>
+                {% endif %}
+            </div>
+
+            <!-- Upload Success Message -->
+            {% if uploaded %}
+            <div class="success-message">
+                <i class="fas fa-check-circle"></i> File "{{ filename }}" uploaded successfully!
+            </div>
+            <div class="prediction-result">
+                <h2>Prediction: <span class="prediction-text">{{ prediction_text }}</span></h2>
+                <div class="image-container">
+                    <img src="{{ url_for('send_file', filename=filename) }}" alt="Uploaded MRI Scan">
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Error Message -->
+            {% if error %}
+            <div class="error-message">
+                <i class="fas fa-exclamation-circle"></i> {{ error }}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- About Tab Content -->
+        <div id="about" class="tab-content">
+            <div class="about-section">
+                <h2>About NeuroDetect</h2>
+                <p class="about-description">
+                    NeuroDetect is an advanced AI-powered application designed to detect brain cancer using MRI scans. 
+                    Leveraging a Convolutional Neural Network (CNN) model, it provides accurate predictions to assist 
+                    medical professionals and patients in early diagnosis.
+                </p>
+
+                <h3>Key Features</h3>
+                <ul class="features-list">
+                    <li><i class="fas fa-check"></i> High accuracy detection using deep learning</li>
+                    <li><i class="fas fa-check"></i> Supports multiple image formats (.jpg, .jpeg, .png, .bmp, .gif)</li>
+                    <li><i class="fas fa-check"></i> Fast and efficient processing</li>
+                    <li><i class="fas fa-check"></i> User-friendly interface</li>
+                </ul>
+
+                <h3>Model Details</h3>
+                <ul class="model-info">
+                    <li><strong>Model Type:</strong> Convolutional Neural Network (CNN)</li>
+                    <li><strong>Training Dataset:</strong> Brain MRI images</li>
+                    <li><strong>Classes:</strong> Glioma, Meningioma, No Tumor, Pituitary</li>
+                    <li><strong>Accuracy:</strong> 93%</li>
+                </ul>
+
+                <h3>How It Works</h3>
+                <p class="how-it-works">
+                    NeuroDetect analyzes uploaded MRI scans using a pre-trained CNN model. The model evaluates the image 
+                    and predicts the presence of a tumor, classifying it into one of the four categories. Results are 
+                    displayed instantly, providing valuable insights for further medical action.
+                </p>
+            </div>
+        </div>
+
+        <!-- Footer Section -->
+        <footer class="footer">
+            <p>&copy; 2023 NeuroDetect. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Function to switch between tabs
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(function(content) {
+                content.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(function(tab) {
+                tab.classList.remove('active');
+            });
+            document.getElementById(tabId).classList.add('active');
+            document.querySelector('.tab[onclick="showTab(\'' + tabId + '\')"]').classList.add('active');
+        }
+
+        // Function to update file info display
+        function updateFileInfo() {
+            var fileInput = document.getElementById('file');
+            var fileInfo = document.getElementById('fileInfo');
+            var file = fileInput.files[0];
+            if (file) {
+                fileInfo.innerHTML = '<p class="file-name">File Name: <span>' + file.name + '</span></p>';
+            } else {
+                fileInfo.innerHTML = '';
+            }
+        }
+
+        // Clear file input and fileInfo on page load
+        window.onload = function() {
+            document.getElementById('file').value = '';
+            document.getElementById('fileInfo').innerHTML = '';
+        };
+    </script>
+</body>
+</html>
+
